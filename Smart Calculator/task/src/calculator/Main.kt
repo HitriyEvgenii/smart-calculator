@@ -11,21 +11,7 @@ fun main() {
             "" -> ""
 
             else -> {
-                var sum = 0
-                val lineList = readNumbers(line)
-                if (lineList.size == 1) println(lineList[0].toInt())
-                else {
-                    while (lineList.size != 0) {
-                        sum = stringToOperator(lineList[0].toInt(), lineList[1], lineList[2].toInt())
-                        repeat(3){
-                            lineList.removeAt(0)
-                        }
-
-                        if (lineList.size == 0) continue
-                        else lineList.add(0, sum.toString())
-                    }
-                    println(sum)
-                }
+                checkLine(line)
 
             }
         }
@@ -36,11 +22,9 @@ fun main() {
 
 }
 
-fun readNumbers(numbers: String): MutableList<String> {
-    val line = numbers.split(" ").toMutableList()
-    line.removeAll(List(line.count {i -> i == ""}){""})
-    return line
-}
+fun readNumbers(numbers: String): MutableList<String> = numbers.split("\\s+".toRegex()).toMutableList()
+    // val line = numbers.split(" ").toMutableList()
+    // line.removeAll(List(line.count {i -> i == ""}){""})
 
 fun stringToOperator (a: Int, i: String, b: Int): Int {
     val plus = i.count {operator -> operator == '+'}
@@ -48,4 +32,31 @@ fun stringToOperator (a: Int, i: String, b: Int): Int {
     if (plus > 0) return a + b
     else if (minus > 0 && minus % 2 == 0) return a + b
     else return a - b
+}
+
+fun checkLine(line: String) {
+    val lineList = readNumbers(line)
+
+    if (lineList[0][0] == '/') println("Unknown command")
+    else {
+        try {
+            var sum = 0
+
+            if (lineList.size == 1) println(lineList[0].toInt())
+            else {
+                while (lineList.size != 0) {
+                    sum = stringToOperator(lineList[0].toInt(), lineList[1], lineList[2].toInt())
+                    repeat(3) {
+                        lineList.removeAt(0)
+                    }
+
+                    if (lineList.size == 0) continue
+                    else lineList.add(0, sum.toString())
+                }
+                println(sum)
+            }
+        } catch (e: Exception) {
+            println("Invalid expression")
+        }
+    }
 }
