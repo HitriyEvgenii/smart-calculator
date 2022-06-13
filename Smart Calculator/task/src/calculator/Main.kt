@@ -4,27 +4,31 @@ package calculator
 fun main() {
     var line = readln()
     //var line = "9 +++ 10 -- 8"
+    val variablesMap = emptyMap<String, Int>().toMutableMap()
 
     while (line != "/exit") {
         when (line) {
             "/help" -> println("The program calculates the sum of numbers")
             "" -> ""
-
             else -> {
-                checkLine(line)
+                if (line.contains('=')) {
+                    try {
+                        variablesMap += addVariable(line, variablesMap)
+                    }
+                    catch(e: Exception) {
+                        println("Invalid assignment")
+                    }
 
+                }
+                else checkLine(line)
             }
         }
-
         line = readln()
     }
     println("bye")
-
 }
 
 fun readNumbers(numbers: String): MutableList<String> = numbers.split("\\s+".toRegex()).toMutableList()
-    // val line = numbers.split(" ").toMutableList()
-    // line.removeAll(List(line.count {i -> i == ""}){""})
 
 fun stringToOperator (a: Int, i: String, b: Int): Int {
     val plus = i.count {operator -> operator == '+'}
@@ -59,4 +63,14 @@ fun checkLine(line: String) {
             println("Invalid expression")
         }
     }
+}
+
+fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<String, Int> {
+    val variab = variable.replace("\\s*".toRegex(), "")
+    val pair = variab.split("=")
+    if (pair[1] in variablesMap) {
+        val key = pair[1]
+        return Pair(pair[0], variablesMap[key]!!)
+    }
+    else return Pair(pair[0], pair[1].toInt())
 }
