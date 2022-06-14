@@ -20,7 +20,7 @@ fun main() {
                     }
 
                 }
-                else if (line.split(" ").size == 1 && line[0] != '/') println(variablesMap[line])
+                //else if (line.split(" ").size == 1 && line[0] != '/') println(variablesMap[line])
                 else checkLine(line, variablesMap)
                     //checkLineChar(line, variablesMap)
             }
@@ -50,12 +50,13 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
     val lineList = readNumbers(line, variablesMap)
 
     if (lineList[0][0] == '/') println("Unknown command")
-    else if (lineList.size == 0) println("Unknown variable")
+    else if (lineList.size == 1 && lineList[0] == ) println("Unknown variable")
     else {
         try {
             var sum = 0
 
-            if (lineList.size == 1) println(lineList[0].toInt())
+            if (lineList.size == 1) println(lineList[0])
+
             else {
                 while (lineList.size != 0) {
                     sum = stringToOperator(lineList[0].toInt(), lineList[1], lineList[2].toInt())
