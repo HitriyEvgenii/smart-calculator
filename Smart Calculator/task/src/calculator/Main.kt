@@ -3,7 +3,6 @@ package calculator
 
 fun main() {
     var line = readln()
-    //var line = "9 +++ 10 -- 8"
     val variablesMap = emptyMap<String, Int>().toMutableMap()
 
 
@@ -51,6 +50,7 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
     val lineList = readNumbers(line, variablesMap)
 
     if (lineList[0][0] == '/') println("Unknown command")
+    else if (lineList.size == 0) println("Unknown variable")
     else {
         try {
             var sum = 0
@@ -78,7 +78,18 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
 fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<String, Int> {
     val variab = variable.replace("\\s*".toRegex(), "")
     val pair = variab.split("=")
-    if (pair[1] in variablesMap) {
+
+
+    if (pair[0].contains("[a-zA-Z]\\d+".toRegex()) || !pair[0].contains("[a-zA-Z]".toRegex())) {
+        println("Invalid identifier")
+        return Pair("null", 0)
+    }
+
+    else if (pair[1].contains("[a-zA-Z]\\d+".toRegex())) {
+        println("Invalid assignment")
+        return Pair("null", 0)
+    }
+    else if (pair[1] in variablesMap) {
         val key = pair[1]
         return Pair(pair[0], variablesMap[key]!!)
     }
