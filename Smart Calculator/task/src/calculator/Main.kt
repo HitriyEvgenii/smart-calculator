@@ -6,6 +6,7 @@ fun main() {
     //var line = "9 +++ 10 -- 8"
     val variablesMap = emptyMap<String, Int>().toMutableMap()
 
+
     while (line != "/exit") {
         when (line) {
             "/help" -> println("The program calculates the sum of numbers")
@@ -20,7 +21,9 @@ fun main() {
                     }
 
                 }
-                else checkLine(line)
+                else if (line.split(" ").size == 1 && line[0] != '/') println(variablesMap[line])
+                else checkLine(line, variablesMap)
+                    //checkLineChar(line, variablesMap)
             }
         }
         line = readln()
@@ -28,7 +31,13 @@ fun main() {
     println("bye")
 }
 
-fun readNumbers(numbers: String): MutableList<String> = numbers.split("\\s+".toRegex()).toMutableList()
+fun readNumbers(numbers: String, variablesMap: MutableMap<String, Int>): MutableList<String> {
+    var num = numbers.split("\\s+".toRegex()).toMutableList()
+    for (i in num) {
+        if (i in variablesMap) num[num.indexOf(i)] = variablesMap[i].toString()
+    }
+    return num
+}
 
 fun stringToOperator (a: Int, i: String, b: Int): Int {
     val plus = i.count {operator -> operator == '+'}
@@ -38,8 +47,8 @@ fun stringToOperator (a: Int, i: String, b: Int): Int {
     else return a - b
 }
 
-fun checkLine(line: String) {
-    val lineList = readNumbers(line)
+fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
+    val lineList = readNumbers(line, variablesMap)
 
     if (lineList[0][0] == '/') println("Unknown command")
     else {
@@ -64,6 +73,7 @@ fun checkLine(line: String) {
         }
     }
 }
+
 
 fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<String, Int> {
     val variab = variable.replace("\\s*".toRegex(), "")
