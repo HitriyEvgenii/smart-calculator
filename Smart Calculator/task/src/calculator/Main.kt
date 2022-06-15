@@ -50,7 +50,7 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
     val lineList = readNumbers(line, variablesMap)
 
     if (lineList[0][0] == '/') println("Unknown command")
-    else if (lineList.size == 1 && lineList[0] == ) println("Unknown variable")
+    else if (lineList.size == 1 && lineList[0].contains("[a-zA-Z]".toRegex())) println("Unknown variable")
     else {
         try {
             var sum = 0
