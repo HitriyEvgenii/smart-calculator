@@ -96,3 +96,32 @@ fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<S
     }
     else return Pair(pair[0], pair[1].toInt())
 }
+
+fun infixToPostfix(line: String) {
+    var lineList = line.split(" ")
+    val outputStack = emptyList<String>().toMutableList()
+    val operatorsStack = emptyList<String>().toMutableList()
+    for (i in lineList) {
+        if (i.contains("\\d".toRegex())) outputStack.add(i)
+        else if (i.contains("[-+*/^]".toRegex()) && operatorsStack.size == 0) operatorsStack.add(i)
+        else if (i.contains("[-+*/^]".toRegex())) {
+            if (i.contains("[*/]".toRegex()) && operatorsStack.last().contains("[*/+-]".toRegex())) operatorsStack.add(i)
+            else if (i.contains("[+-]".toRegex()) && operatorsStack.last().contains("[*/]".toRegex())) {
+                outputStack.add(i)
+                while (operatorsStack.last() == "^" || operatorsStack.size == 0) {
+                    outputStack.add(operatorsStack.last())
+                    operatorsStack.removeLast()
+                }
+            }
+            else if (i == "^") outputStack.add(i)
+        }
+
+    }
+    if (operatorsStack.size != 0) {
+        while (operatorsStack.size != 0) {
+            outputStack.add(operatorsStack.last())
+            operatorsStack.removeLast()
+        }
+    }
+    println(outputStack)
+}
