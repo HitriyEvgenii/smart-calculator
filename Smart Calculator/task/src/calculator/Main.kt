@@ -98,25 +98,44 @@ fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<S
 }
 
 fun infixToPostfix(line: String) {
-    var lineList = line.split(" ")
+    var line = line.replace("[(]".toRegex(), " ( ")
+    line = line.replace("[)]".toRegex(), " ) ")
+    var lineList = line.split("\\s+".toRegex())
     val outputStack = emptyList<String>().toMutableList()
     val operatorsStack = emptyList<String>().toMutableList()
     for (i in lineList) {
-        if (i.contains("\\d".toRegex())) outputStack.add(i)
-        else if (i.contains("[-+*/^]".toRegex()) && operatorsStack.size == 0) operatorsStack.add(i)
-        else if (i.contains("[-+*/^]".toRegex())) {
-            if (i.contains("[*/]".toRegex()) && operatorsStack.last().contains("[*/+-]".toRegex())) operatorsStack.add(i)
-            else if (i.contains("[+-]".toRegex()) && operatorsStack.last().contains("[*/]".toRegex())) {
-                outputStack.add(i)
-                while (operatorsStack.last() == "^" || operatorsStack.size == 0) {
-                    outputStack.add(operatorsStack.last())
-                    operatorsStack.removeLast()
-                }
+        if (i.contains("\\w".toRegex())) outputStack.add(i)
+        else if (operatorsStack.size == 0 || operatorsStack.last() == "(") operatorsStack.add(i)
+        else if (i == "^") outputStack.add(i)
+        else if (i.contains("[*/]".toRegex()) && operatorsStack.last().contains("[+-]".toRegex())) operatorsStack.add(i)
+        else if (i.contains("[*/]".toRegex()) && operatorsStack.last().contains("[*/^]".toRegex())) {
+            while (operatorsStack.last().contains("[+-]?\\(?".toRegex())) {
+                outputStack.add(operatorsStack.last())
+                operatorsStack.removeLast()
+                if (operatorsStack.size == 0) break
             }
-            else if (i == "^") outputStack.add(i)
+            operatorsStack.add(i)
         }
-
+        else if (i.contains("[+-]".toRegex()) && operatorsStack.last().contains("[-+*/]".toRegex())) {
+            while (operatorsStack.last().contains("[+-]?\\(?".toRegex())) {
+                outputStack.add(operatorsStack.last())
+                operatorsStack.removeLast()
+                if (operatorsStack.size == 0) break
+            }
+            operatorsStack.add(i)
+        }
+        else if (i.contains("[+-]".toRegex()) && operatorsStack.last() == "(") operatorsStack.add(i)
+        else if (i == "(") operatorsStack.add(i)
+        else if (i == ")") {
+            while (operatorsStack.last() != "(") {
+                outputStack.add(operatorsStack.last())
+                operatorsStack.removeLast()
+            }
+            operatorsStack.removeLast()
+        }
     }
+
+
     if (operatorsStack.size != 0) {
         while (operatorsStack.size != 0) {
             outputStack.add(operatorsStack.last())
