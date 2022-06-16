@@ -1,9 +1,12 @@
 package calculator
+
+import java.math.BigInteger
+
 //import java.util.Scanner
 
 fun main() {
     var line = readln()
-    val variablesMap = emptyMap<String, Int>().toMutableMap()
+    val variablesMap = emptyMap<String, BigInteger>().toMutableMap()
 
 
     while (line != "/exit") {
@@ -30,7 +33,7 @@ fun main() {
     println("bye")
 }
 
-fun readNumbers(numbers: String, variablesMap: MutableMap<String, Int>): MutableList<String> {
+fun readNumbers(numbers: String, variablesMap: MutableMap<String, BigInteger>): MutableList<String> {
     val numbers = numbers.replace("^\\s+".toRegex(), "")
     var num = numbers.split("\\s+".toRegex()).toMutableList()
     for (i in num) {
@@ -47,7 +50,7 @@ fun stringToOperator (a: Int, i: String, b: Int): Int {
     else return a - b
 }
 
-fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
+fun checkLine(line: String, variablesMap: MutableMap<String, BigInteger>) {
     val lineList = readNumbers(line, variablesMap)
 
     if (lineList[0][0] == '/') println("Unknown command")
@@ -56,7 +59,7 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
     else if (line.count {i -> i == '('} != line.count {i -> i == ')'}) println("Invalid expression")
     else {
         try {
-            var sum = 0
+            var sum = 0.toBigInteger()
 
             if (lineList.size == 1) println(lineList[0])
 
@@ -81,25 +84,25 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
 }
 
 
-fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<String, Int> {
+fun addVariable(variable: String, variablesMap: MutableMap<String, BigInteger>): Pair<String, BigInteger> {
     val variab = variable.replace("\\s*".toRegex(), "")
     val pair = variab.split("=")
 
 
     if (pair[0].contains("[a-zA-Z]\\d+".toRegex()) || !pair[0].contains("[a-zA-Z]".toRegex())) {
         println("Invalid identifier")
-        return Pair("null", 0)
+        return Pair("null", 0.toBigInteger())
     }
 
     else if (pair[1].contains("[a-zA-Z]\\d+".toRegex())) {
         println("Invalid assignment")
-        return Pair("null", 0)
+        return Pair("null", 0.toBigInteger())
     }
     else if (pair[1] in variablesMap) {
         val key = pair[1]
         return Pair(pair[0], variablesMap[key]!!)
     }
-    else return Pair(pair[0], pair[1].toInt())
+    else return Pair(pair[0], pair[1].toBigInteger())
 }
 
 fun infixToPostfix(line: String): MutableList<String> {
@@ -158,12 +161,12 @@ fun infixToPostfix(line: String): MutableList<String> {
     return outputStack
 }
 
-fun calculatePostfix(stack: MutableList<String>, variablesMap: MutableMap<String, Int>): Int{
-    var sumStack = emptyList<Int>().toMutableList()
+fun calculatePostfix(stack: MutableList<String>, variablesMap: MutableMap<String, BigInteger>): BigInteger {
+    var sumStack = emptyList<BigInteger>().toMutableList()
     for (i in stack) {
         when {
             i.contains("\\w".toRegex()) -> {
-                if (i.contains("\\d".toRegex())) sumStack.add(i.toInt())
+                if (i.contains("\\d".toRegex())) sumStack.add(i.toBigInteger())
                 else sumStack.add(variablesMap[i]!!)
             }
             i == "+" -> {
