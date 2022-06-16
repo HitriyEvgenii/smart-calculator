@@ -31,6 +31,7 @@ fun main() {
 }
 
 fun readNumbers(numbers: String, variablesMap: MutableMap<String, Int>): MutableList<String> {
+    val numbers = numbers.replace("^\\s+".toRegex(), "")
     var num = numbers.split("\\s+".toRegex()).toMutableList()
     for (i in num) {
         if (i in variablesMap) num[num.indexOf(i)] = variablesMap[i].toString()
@@ -102,10 +103,18 @@ fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<S
 fun infixToPostfix(line: String): MutableList<String> {
     var line = line.replace("[(]".toRegex(), " ( ")
     line = line.replace("[)]".toRegex(), " ) ")
-    var lineList = line.split("\\s+".toRegex())
+
+    var lineList = line.split("\\s+".toRegex()).toMutableList()
+    for (i in 0..lineList.size-1) {
+        if (lineList[i].contains("[-]+".toRegex())) {
+            if (lineList[i].count {oper -> oper == '-'} % 2 ==0) lineList[i] = "+" else lineList[i] = "-"
+        }
+        else if (lineList[i].contains("[+]+".toRegex())) lineList[i] = "+"
+    }
     val outputStack = emptyList<String>().toMutableList()
     val operatorsStack = emptyList<String>().toMutableList()
     for (i in lineList) {
+
         if (i.contains("\\w".toRegex())) outputStack.add(i)
         else if (operatorsStack.size == 0 || operatorsStack.last() == "(") operatorsStack.add(i)
         else if (i == "^") outputStack.add(i)
