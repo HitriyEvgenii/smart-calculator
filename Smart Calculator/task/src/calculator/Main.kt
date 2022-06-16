@@ -52,6 +52,8 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
 
     if (lineList[0][0] == '/') println("Unknown command")
     else if (lineList.size == 1 && lineList[0].contains("[a-zA-Z]".toRegex())) println("Unknown variable")
+    else if (line.contains("[/*]{2,}".toRegex())) println("Invalid expression")
+    else if (line.count {i -> i == '('} != line.count {i -> i == ')'}) println("Invalid expression")
     else {
         try {
             var sum = 0
