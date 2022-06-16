@@ -58,7 +58,7 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
             if (lineList.size == 1) println(lineList[0])
 
             else {
-                while (lineList.size != 0) {
+                /* while (lineList.size != 0) {
                     sum = stringToOperator(lineList[0].toInt(), lineList[1], lineList[2].toInt())
                     repeat(3) {
                         lineList.removeAt(0)
@@ -66,7 +66,9 @@ fun checkLine(line: String, variablesMap: MutableMap<String, Int>) {
 
                     if (lineList.size == 0) continue
                     else lineList.add(0, sum.toString())
-                }
+                } */
+                val postfixLine = infixToPostfix(line)
+                sum = calculatePostfix(postfixLine, variablesMap)
                 println(sum)
             }
         } catch (e: Exception) {
@@ -97,7 +99,7 @@ fun addVariable(variable: String, variablesMap: MutableMap<String, Int>): Pair<S
     else return Pair(pair[0], pair[1].toInt())
 }
 
-fun infixToPostfix(line: String) {
+fun infixToPostfix(line: String): MutableList<String> {
     var line = line.replace("[(]".toRegex(), " ( ")
     line = line.replace("[)]".toRegex(), " ) ")
     var lineList = line.split("\\s+".toRegex())
@@ -117,7 +119,7 @@ fun infixToPostfix(line: String) {
             operatorsStack.add(i)
         }
         else if (i.contains("[+-]".toRegex()) && operatorsStack.last().contains("[-+*/]".toRegex())) {
-            while (operatorsStack.last().contains("[+-]?\\(?".toRegex())) {
+            while (operatorsStack.last() != "(") {
                 outputStack.add(operatorsStack.last())
                 operatorsStack.removeLast()
                 if (operatorsStack.size == 0) break
@@ -142,5 +144,53 @@ fun infixToPostfix(line: String) {
             operatorsStack.removeLast()
         }
     }
-    println(outputStack)
+    return outputStack
+}
+
+fun calculatePostfix(stack: MutableList<String>, variablesMap: MutableMap<String, Int>): Int{
+    var sumStack = emptyList<Int>().toMutableList()
+    for (i in stack) {
+        when {
+            i.contains("\\w".toRegex()) -> {
+                if (i.contains("\\d".toRegex())) sumStack.add(i.toInt())
+                else sumStack.add(variablesMap[i]!!)
+            }
+            i == "+" -> {
+                val lastStack = sumStack.last()
+                sumStack.removeLast()
+                val previousLast = sumStack.last()
+                sumStack.removeLast()
+                sumStack.add(lastStack + previousLast)
+            }
+            i == "-" -> {
+                val lastStack = sumStack.last()
+                sumStack.removeLast()
+                val previousLast = sumStack.last()
+                sumStack.removeLast()
+                sumStack.add(previousLast - lastStack)
+            }
+            i == "*" -> {
+                val lastStack = sumStack.last()
+                sumStack.removeLast()
+                val previousLast = sumStack.last()
+                sumStack.removeLast()
+                sumStack.add(previousLast * lastStack)
+            }
+            i == "/" -> {
+                val lastStack = sumStack.last()
+                sumStack.removeLast()
+                val previousLast = sumStack.last()
+                sumStack.removeLast()
+                sumStack.add(previousLast / lastStack)
+            }
+            i == "^" -> {
+                val lastStack = sumStack.last()
+                sumStack.removeLast()
+                val previousLast = sumStack.last()
+                sumStack.removeLast()
+                sumStack.add(previousLast - lastStack)
+            }
+        }
+    }
+    return sumStack[0]
 }
